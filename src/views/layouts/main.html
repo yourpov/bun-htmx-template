@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+  <header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-4">
+      <nav>
+        <a href="/" class="text-xl font-bold text-blue-600 hover:text-blue-700">Bun + HTMX</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-1 py-8">
+    <div class="max-w-7xl mx-auto px-4">
+      {{content}}
+    </div>
+  </main>
+
+  <footer class="bg-white border-t mt-auto">
+    <div class="max-w-7xl mx-auto px-4 py-6 text-center text-gray-600 text-sm">
+      <p>made by pov (<a href="https://yourpov.dev" class="text-blue-600 hover:underline">YourPOV</a>)</p>
+      <p class="mt-1">
+        <a href="https://discord.com" class="text-gray-500 hover:text-blue-600">discord</a> · 
+        <a href="https://t.me/uhhhwhatever" class="text-gray-500 hover:text-blue-600">telegram</a> 
+        @uhhhwhatever
+      </p>
+    </div>
+  </footer>
+
+  <div id="toast-container" class="fixed top-20 right-4 z-50 space-y-3"></div>
+
+  <script>
+    if (window.location.hostname === 'localhost') {
+      document.body.addEventListener('htmx:afterRequest', (e) => {
+        console.log('htmx:', e.detail);
+      });
+    }
+
+    document.body.addEventListener('htmx:afterSwap', (e) => {
+      if (e.detail.target.id === 'toast-container') {
+        setTimeout(() => {
+          const toasts = document.querySelectorAll('#toast-container > div');
+          toasts.forEach(t => {
+            t.classList.add('opacity-0', 'transition-opacity');
+            setTimeout(() => t.remove(), 300);
+          });
+        }, 5000);
+      }
+    });
+  </script>
+</body>
+</html>

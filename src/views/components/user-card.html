@@ -1,0 +1,17 @@
+<div class="user-card" id="user-{{id}}">
+  <div class="user-avatar">{{avatar}}</div>
+  <div class="user-info">
+    <h3>{{name}}</h3>
+    <p class="user-email">{{email}}</p>
+    <p class="user-role">{{role}}</p>
+  </div>
+  <button 
+    hx-get="/users/{{id}}/details" 
+    hx-target="#user-modal"
+    hx-swap="innerHTML"
+    class="btn btn-sm btn-primary"
+    onclick="document.getElementById('user-modal').style.display='flex'"
+  >
+    View Details
+  </button>
+</div>

@@ -1,0 +1,96 @@
+<div class="max-w-2xl mx-auto py-12">
+  <h1 class="text-3xl font-bold mb-4">WebSocket Demo</h1>
+  <p class="text-gray-600 mb-8">real-time bidirectional communication</p>
+  
+  <div class="bg-white p-6 rounded-lg border mb-6">
+    <div class="mb-4">
+      <label class="block text-sm font-medium mb-2">connection status:</label>
+      <span id="status" class="text-gray-500">disconnected</span>
+    </div>
+    
+    <div class="mb-4">
+      <label class="block text-sm font-medium mb-2">send message:</label>
+      <div class="flex gap-2">
+        <input 
+          type="text" 
+          id="msgInput" 
+          class="flex-1 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="type something..."
+        >
+        <button 
+          onclick="sendMsg()"
+          class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-medium"
+        >
+          send
+        </button>
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-2">messages:</label>
+      <div id="messages" class="bg-gray-50 p-4 rounded h-64 overflow-y-auto space-y-2"></div>
+    </div>
+  </div>
+
+  <button 
+    onclick="location.href='/'"
+    class="text-blue-600 hover:underline"
+  >
+    ← back home
+  </button>
+</div>
+
+<script>
+  let ws;
+  const status = document.getElementById('status');
+  const messages = document.getElementById('messages');
+  const input = document.getElementById('msgInput');
+
+  function connect() {
+    const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    ws = new WebSocket(`${proto}//${location.host}`);
+    
+    ws.onopen = () => {
+      status.textContent = 'connected';
+      status.className = 'text-green-600 font-medium';
+      addMsg('system: connected to server', 'text-green-600');
+    };
+    
+    ws.onmessage = (e) => {
+      addMsg(`server: ${e.data}`, 'text-blue-600');
+    };
+    
+    ws.onclose = () => {
+      status.textContent = 'disconnected';
+      status.className = 'text-red-600 font-medium';
+      addMsg('system: disconnected', 'text-red-600');
+    };
+    
+    ws.onerror = (e) => {
+      addMsg('system: error occurred', 'text-red-600');
+    };
+  }
+
+  function sendMsg() {
+    const msg = input.value.trim();
+    if (msg && ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(msg);
+      addMsg(`you: ${msg}`, 'text-gray-600');
+      input.value = '';
+    }
+  }
+
+  function addMsg(text, color = 'text-gray-600') {
+    const div = document.createElement('div');
+    div.className = `${color} text-sm`;
+    div.textContent = text;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  input.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendMsg();
+  });
+
+  connect();
+</script>
